@@ -1,0 +1,45 @@
+< script type = "module" >
+    // Import the functions you need from the SDKs you need import { initializeApp } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js"; import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-firestore.js";
+    // TODO: Add SDKs for Firebase products that you want to use // https://firebase.google.com/docs/web/setup#available-libraries // Your web app's Firebase configuration const firebaseConfig = { apiKey: "AIzaSyCwC5HhzezgQn99swmM9Ldtx7nVShXVSOw",
+    authDomain: "lecture10-24dde.firebaseapp.com", projectId: "lecture10-24dde", storageBucket: "lecture10-24dde.appspot.com", messagingSenderId: "463778461074", appId: "1:463778461074:web:82e873c23c50644803bd4b"
+}; // Initialize Firebase const app
+= initializeApp(firebaseConfig);
+const db = getFirestore(app);
+async function getRestaurants(db) {
+    const restaurantsCol = collection(db, "restaurant");
+    const restaurantSnapshot = await getDocs(restaurantsCol);
+    const restaurantList = restaurantSnapshot.docs.map((doc) => doc.data());
+    return restaurantList;
+}
+const restaurantList = document.querySelector('#restaurant-list');
+const form = document.querySelector('#add-restaurant-form')
+
+function renderRestaurant(dc) {
+    let li = document.createElement("li");
+    let
+        name = document.createElement("span");
+    let city = document.createElement("span");
+    let cross = document.createElement('div');
+    li.setAttribute('data-id', dc.id);
+    name.textContent = dc.data().name;
+    city.textContent = dc.data().city;
+    cross.textContent = 'x';
+    li.appendChild(name);
+    li.appendChild(city);
+    li.appendChild(cross);
+    restaurantList.appendChild(li);
+    cross.addEventListener('click', (e) => {
+        e.stopPropagation();
+        let id = e.target.parentElement.getAttribute('data-id');
+        deleteDoc(doc(db,
+            "restaurant", id))
+    })
+}
+const restaurants = getDocs(collection(db, "restaurant")).then((snapshot) => { snapshot.forEach((doc) => { renderRestaurant(doc) }) }) const q = query(collection(db, "restaurant"), where("city", "==", "hays"));
+const querySnapshot = await getDocs(q);
+querySnapshot.forEach((doc) => { console.log(doc.id, "=>", doc.data()) }) const upDoc = doc(db, "restaurant", "lLaOn1T3zlTmVz1NUc1E");
+updateDoc(upDoc, { name: "Papa murphy" }) form.addEventListener(('submit'), (e) => {
+        e.preventDefault();
+        const docRef = addDoc(collection(db, "restaurant"), { city: form.city.value, name: form.name.value })
+    }) <
+    /script>
